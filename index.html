@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Election Commission of India – Voter Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --saffron: #FF6B2B;
+    --saffron-light: #FFF0E8;
+    --saffron-mid: #FFD4BC;
+    --navy: #1A2A5E;
+    --navy-light: #EEF1FA;
+    --navy-mid: #3B4D8A;
+    --green: #138808;
+    --green-light: #E8F5E8;
+    --white: #FFFFFF;
+    --off-white: #F8F7F4;
+    --border: #E2E0DB;
+    --text: #1C1C1C;
+    --muted: #6B6860;
+    --radius: 14px;
+    --shadow: 0 2px 20px rgba(26,42,94,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ─────────────────────────────────────── */
+  header {
+    background: var(--navy);
+    color: white;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--saffron);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .emblem {
+    width: 40px; height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  .brand-text h1 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: white;
+  }
+
+  .brand-text p {
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 6px;
+  }
+
+  .nav-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+  .nav-btn.active { background: var(--saffron); border-color: var(--saffron); color: white; }
+
+  /* ── Tricolour bar ───────────────────────────────── */
+  .tricolor {
+    height: 4px;
+    background: linear-gradient(90deg, var(--saffron) 33.3%, white 33.3% 66.6%, var(--green) 66.6%);
+  }
+
+  /* ── Layout ─────────────────────────────────────── */
+  .app { display: flex; height: calc(100vh - 71px); }
+
+  .sidebar {
+    width: 220px;
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar-section {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .sidebar-section:first-child { margin-top: 0; }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+    transition: all 0.12s;
+    margin-bottom: 2px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: 'Sora', sans-serif;
+  }
+
+  .sidebar-item:hover { background: var(--off-white); }
+  .sidebar-item.active { background: var(--navy-light); color: var(--navy); font-weight: 500; }
+
+  .sidebar-icon {
+    width: 16px; height: 16px;
+    background: currentColor;
+    border-radius: 3px;
+    opacity: 0.6;
+    flex-shrink: 0;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  /* ── Main content ────────────────────────────────── */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+  }
+
+  /* ── Panels (shown/hidden) ───────────────────────── */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Page title ──────────────────────────────────── */
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .page-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  /* ── Stat cards ──────────────────────────────────── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .stat-card .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-card .value {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .stat-card .sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .stat-card.saffron { border-top: 3px solid var(--saffron); }
+  .stat-card.green   { border-top: 3px solid var(--green);   }
+  .stat-card.navy    { border-top: 3px solid var(--navy);    }
+
+  /* ── Cards ───────────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 16px;
+    background: var(--saffron);
+    border-radius: 2px;
+  }
+
+  /* ── Form ────────────────────────────────────────── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input, select, textarea {
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--off-white);
+    color: var(--text);
+    transition: border 0.15s;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--navy);
+    background: white;
+  }
+
+  .step-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  .step-tab {
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: var(--muted);
+    transition: all 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Sora', sans-serif;
+  }
+
+  .step-tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+
+  /* ── Buttons ─────────────────────────────────────── */
+  .btn {
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--navy);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--navy-mid); }
+
+  .btn-saffron {
+    background: var(--saffron);
+    color: white;
+  }
+
+  .btn-saffron:hover { filter: brightness(0.92); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-outline:hover { background: var(--off-white); }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Parties / vote bar ──────────────────────────── */
+  .party-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .party-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border 0.15s, background 0.15s;
+    cursor: pointer;
+  }
+
+  .party-row:hover { border-color: var(--saffron); background: var(--saffron-light); }
+  .party-row.selected { border-color: var(--navy); background: var(--navy-light); }
+
+  .party-badge {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .party-info { flex: 1; }
+  .party-name { font-size: 13px; font-weight: 500; }
+  .party-code { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .vote-bar-wrap { margin-top: 8px; height: 4px; background: var(--border); border-radius: 2px; }
+  .vote-bar { height: 4px; border-radius: 2px; background: var(--saffron); transition: width 0.5s; }
+
+  /* ── Results chart ───────────────────────────────── */
+  .result-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-rank {
+    width: 24px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .result-name { flex: 1; font-size: 13px; font-weight: 500; }
+  .result-bar-wrap { width: 140px; height: 6px; background: var(--border); border-radius: 3px; }
+  .result-bar { height: 6px; border-radius: 3px; }
+  .result-count { width: 60px; font-size: 12px; text-align: right; color: var(--muted); }
+
+  /* ── Winner banner ───────────────────────────────── */
+  .winner-banner {
+    background: var(--navy);
+    color: white;
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .winner-crown {
+    font-size: 28px;
+  }
+
+  .winner-text h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  .winner-text p {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  /* ── Alert ───────────────────────────────────────── */
+  .alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .alert.success { background: var(--green-light); color: var(--green); display: block; }
+  .alert.error   { background: #FEE; color: #B91C1C; display: block; }
+
+  /* ── Search ──────────────────────────────────────── */
+  .search-result {
+    background: var(--off-white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    display: none;
+  }
+
+  .search-result.show { display: block; animation: fadeIn 0.2s; }
+
+  .field-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .field-row:last-child { border-bottom: none; }
+  .field-row .key { color: var(--muted); }
+  .field-row .val { font-weight: 500; }
+
+  /* ── Auth screens ────────────────────────────────── */
+  .auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--off-white);
+    padding: 2rem;
+  }
+
+  .auth-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 40px rgba(26,42,94,0.1);
+  }
+
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .auth-logo .circle {
+    width: 64px; height: 64px;
+    background: var(--navy);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 12px;
+  }
+
+  .auth-logo h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--navy);
+  }
+
+  .auth-logo p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .auth-switch {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .auth-switch a {
+    color: var(--navy);
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="circle">🗳️</div>
+        <h2>Election Commission of India</h2>
+        <p>Voter Helpline & Management Portal</p>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form">
+        <div id="login-alert" class="alert"></div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>Mobile Number</label>
+          <input type="tel" id="login-mobile" placeholder="10-digit mobile number" maxlength="10"/>
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label>Password</label>
+          <input type="password" id="login-pwd" placeholder="Your password"/>
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">Sign In</button>
+        <div class="auth-switch">
+          Don't have an account? <a onclick="showRegister()">Register now</a>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" style="display:none;">
+        <div id="reg-alert" class="alert"></div>
+        <div class="form-grid" style="margin-bottom:1rem;">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="reg-fn" placeholder="First name"/>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="reg-ln" placeholder="Last name"/>
+          </div>
+          <div class="form-group full">
+            <label>Mobile Number</label>
+            <input type="tel" id="reg-mobile" placeholder="10-digit mobile" maxlength="10"/>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-pwd" placeholder="Min 8 chars"/>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="reg-cpwd" placeholder="Repeat password"/>
+          </div>
+        </div>
+        <button class="btn btn-saffron" style="width:100%;" onclick="doRegister()">Create Account</button>
+        <div class="auth-switch">
+          Already registered? <a onclick="showLogin()">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     MAIN APP (hidden until login)
+════════════════════════════════════════════════════ -->
+<div id="main-app" style="display:none;">
+
+  <header>
+    <div class="header-brand">
+      <div class="emblem">🗳️</div>
+      <div class="brand-text">
+        <h1>Election Commission of India</h1>
+        <p>Voter Helpline Portal</p>
+      </div>
+    </div>
+    <div class="header-nav">
+      <span id="user-greeting" style="font-size:12px; color:rgba(255,255,255,0.7); margin-right:8px; align-self:center;"></span>
+      <button class="nav-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+  <div class="tricolor"></div>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <button class="sidebar-item active" onclick="showPanel('dashboard', this)">
+        Dashboard
+      </button>
+
+      <div class="sidebar-section">Electoral Roll</div>
+      <button class="sidebar-item" onclick="showPanel('register', this)">
+        New Registration
+      </button>
+      <button class="sidebar-item" onclick="showPanel('search', this)">
+        Search Voter
+      </button>
+      <button class="sidebar-item" onclick="showPanel('all-voters', this)">
+        All Records
+      </button>
+
+      <div class="sidebar-section">Elections</div>
+      <button class="sidebar-item" onclick="showPanel('vote', this)">
+        Cast Vote
+      </button>
+      <button class="sidebar-item" onclick="showPanel('results', this)">
+        Live Results
+      </button>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <!-- ── Dashboard ─────────────────────────── -->
+      <div id="panel-dashboard" class="panel active">
+        <p class="page-title">Welcome to the Portal</p>
+        <p class="page-sub">Election Commission of India – Voter Management System</p>
+
+        <div class="stat-grid">
+          <div class="stat-card saffron">
+            <div class="label">Total Voters</div>
+            <div class="value" id="stat-total">0</div>
+            <div class="sub">Registered on portal</div>
+          </div>
+          <div class="stat-card green">
+            <div class="label">Votes Cast</div>
+            <div class="value" id="stat-votes">0</div>
+            <div class="sub">In current election</div>
+          </div>
+          <div class="stat-card navy">
+            <div class="label">Turnout</div>
+            <div class="value" id="stat-turnout">0%</div>
+            <div class="sub">Of registered voters</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Parties</div>
+            <div class="value">6</div>
+            <div class="sub">On the ballot</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Quick Actions</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="showPanel('register', document.querySelector('[onclick*=register]'))">Register New Voter</button>
+            <button class="btn btn-saffron" onclick="showPanel('vote', document.querySelector('[onclick*=vote]'))">Cast a Vote</button>
+            <button class="btn btn-outline" onclick="showPanel('results', document.querySelector('[onclick*=results]'))">View Results</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">About This Portal</div>
+          <p style="font-size:13px; color:var(--muted); line-height:1.8;">
+            This portal is the official interface of the Election Commission of India for managing voter registrations, electoral roll corrections, and conducting general elections. All registered users can register as voters, update their details, search the electoral roll, and cast their vote in active elections.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Register Voter ─────────────────────── -->
+      <div id="panel-register" class="panel">
+        <p class="page-title">Electoral Roll Registration</p>
+        <p class="page-sub">Form 1 – New Voter Registration | Form 2 – Deletion | Form 3 – Correction</p>
+
+        <div class="card">
+          <div class="step-tabs">
+            <button class="step-tab active" onclick="switchStep(0, this)">Constituency</button>
+            <button class="step-tab" onclick="switchStep(1, this)">Personal</button>
+            <button class="step-tab" onclick="switchStep(2, this)">Address</button>
+            <button class="step-tab" onclick="switchStep(3, this)">Family</button>
+          </div>
+
+          <div id="reg-alert-main" class="alert"></div>
+
+          <!-- Step 0: Constituency -->
+          <div class="reg-step" id="step-0">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>State / UT</label>
+                <select id="f-state">
+                  <option value="">Select State</option>
+                  <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option>
+                  <option>Delhi</option><option>Gujarat</option><option>Karnataka</option>
+                  <option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option>
+                  <option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option>
+                  <option>Telangana</option><option>Uttar Pradesh</option><option>West Bengal</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>District</label>
+                <input type="text" id="f-district" placeholder="Your district"/>
+              </div>
+              <div class="form-group">
+                <label>Assembly Constituency</label>
+                <input type="text" id="f-assembly" placeholder="Assembly constituency"/>
+              </div>
+              <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" id="f-dob"/>
+              </div>
+              <div class="form-group full">
+                <label>DOB Proof Document</label>
+                <select id="f-doc">
+                  <option value="">Select document type</option>
+                  <option>Aadhaar Card</option>
+                  <option>Birth Certificate</option>
+                  <option>Domicile / Nationality Certificate</option>
+                  <option>School Leaving Certificate</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="nextStep(1)">Save & Continue →</button>
+            </div>
+          </div>
+
+          <!-- Step 1: Personal -->
+          <div class="reg-step" id="step-1" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="f-fn" placeholder="First name"/>
+              </div>
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="f-ln" placeholder="Last name"/>
+              </div>
+              <div class="form-group">
+                <label>Gender</label>
+                <select id="f-gender">
+                  <option value="">Select</option>
+                  <option>Male</option><option>Female</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="f-mobile" placeholder="10-digit number" maxlength="10"/>
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="f-email" placeholder="example@email.com"/>
+              </div>
+              <div class="form-group">
+                <label>Aadhaar Number</label>
+                <input type="text" id="f-aadhaar" placeholder="12-digit Aadhaar" maxlength="12"/>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-outline" onclick="nextStep(0)">← Back</button>
+              <button class="btn btn-primary" onclick="nextStep(2)">Save & Continue →</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Address -->
+          <div class="reg-step" id="step-2" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>House / Building / Apt No.</label>
+                <input type="text" id="f-apt" placeholder="Apt / Building no."/>
+              </div>
+              <div class="form-group">
+                <label>Street / Area / Locality</label>
+                <input type="text" id="f-area" placeholder="Street or area"/>
+              </div>
+              <div class="form-group">
+                <label>Town / Village</label>
+                <input type="text" id="f-town" placeholder="Town or village"/>
+              </div>
+              <div class="form-group">
+                <label>Pincode</label>
+                <input type="text" id="f-pincode" placeholder="6-digit pincode" maxlength="6"/>
+              </div>
+              <div class="form-group">
+                <label>Tehsil / Taluka / Mandal</label>
+                <input type="text" id="f-taluka" placeholder="Tehsil or taluka"/>
+              </div>
+              <div class="form-group">
+                <label>Address Proof</label>
+                <select id="f-addrproof">
+                  <option value="">Select document</option>
+                  <option>Electricity Bill</option><option>Water Bill</option>
+                  <option>Rent Agreement</option><option>Bank Passbook</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-outline" onclick="nextStep(1)">← Back</button>
+              <button class="btn btn-primary" onclick="nextStep(3)">Save & Continue →</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Family & Submit -->
+          <div class="reg-step" id="step-3" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Relation with Voter</label>
+                <select id="f-relation">
+                  <option value="">Select relation</option>
+                  <option>Father</option><option>Mother</option><option>Sibling</option><option>Spouse</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Family Member's Name</label>
+                <input type="text" id="f-relname" placeholder="Full name"/>
+              </div>
+              <div class="form-group full">
+                <label>Family Member's EPIC Number</label>
+                <input type="text" id="f-relid" placeholder="6-digit EPIC number" maxlength="6"/>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin:1rem 0; font-style:italic;">
+              I hereby declare that to the best of my knowledge and belief, all details entered are correct and complete.
+            </p>
+            <div class="btn-row">
+              <button class="btn btn-outline" onclick="nextStep(2)">← Back</button>
+              <button class="btn btn-saffron" onclick="submitVoterForm()">Submit Application</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Search Voter ────────────────────────── -->
+      <div id="panel-search" class="panel">
+        <p class="page-title">Search Electoral Roll</p>
+        <p class="page-sub">Find a voter record by EPIC number</p>
+
+        <div class="card">
+          <div class="card-title">Search by EPIC</div>
+          <div style="display:flex; gap:10px; align-items:flex-end;">
+            <div class="form-group" style="flex:1;">
+              <label>EPIC Number</label>
+              <input type="text" id="search-epic" placeholder="Enter 6-digit EPIC" maxlength="6"/>
+            </div>
+            <button class="btn btn-primary" onclick="searchVoter()" style="height:38px;">Search</button>
+          </div>
+          <div id="search-result" class="search-result"></div>
+        </div>
+
+        <!-- Delete & Correct -->
+        <div class="card">
+          <div class="card-title">Manage Record</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div class="form-group" style="flex:1; min-width:160px;">
+              <label>EPIC for Deletion</label>
+              <input type="text" id="del-epic" placeholder="EPIC number" maxlength="6"/>
+            </div>
+            <button class="btn btn-outline" onclick="deleteVoter()" style="align-self:flex-end; height:38px; color:#B91C1C; border-color:#FCA5A5;">Delete Record</button>
+          </div>
+          <div id="del-alert" class="alert" style="margin-top:1rem;"></div>
+        </div>
+      </div>
+
+      <!-- ── All Voters ──────────────────────────── -->
+      <div id="panel-all-voters" class="panel">
+        <p class="page-title">All Voter Records</p>
+        <p class="page-sub">Complete electoral roll</p>
+
+        <div class="card">
+          <div id="all-voters-list" style="font-size:13px; color:var(--muted);">No records yet.</div>
+        </div>
+      </div>
+
+      <!-- ── Cast Vote ───────────────────────────── -->
+      <div id="panel-vote" class="panel">
+        <p class="page-title">Cast Your Vote</p>
+        <p class="page-sub">General Elections – Assembly Constituencies</p>
+
+        <div class="card">
+          <div class="card-title">Voter Verification</div>
+          <div style="display:flex; gap:10px; align-items:flex-end;">
+            <div class="form-group" style="flex:1;">
+              <label>Your EPIC Number</label>
+              <input type="text" id="vote-epic" placeholder="6-digit EPIC number" maxlength="6"/>
+            </div>
+            <button class="btn btn-outline" onclick="verifyEpic()" style="height:38px;">Verify</button>
+          </div>
+          <div id="voter-info" style="margin-top:1rem; font-size:13px; color:var(--muted);"></div>
+        </div>
+
+        <div class="card" id="vote-card" style="display:none;">
+          <div class="card-title">Select Your Party</div>
+          <div class="party-list" id="party-list"></div>
+          <div id="vote-alert" class="alert" style="margin-top:1rem;"></div>
+          <div class="btn-row">
+            <button class="btn btn-saffron" onclick="castVote()">Cast Vote</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Results ────────────────────────────── -->
+      <div id="panel-results" class="panel">
+        <p class="page-title">Live Election Results</p>
+        <p class="page-sub">General Elections – Assembly Constituencies</p>
+        <div id="results-container"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────
+//  In-memory data store (replace with API calls)
+// ─────────────────────────────────────────────────────
+const DB = {
+  users: [],
+  voters: [],
+  parties: [
+    { name: "Aam Aadmi Party",             code: "AAP", color: "#138808", votes: 0 },
+    { name: "Indian National Congress",    code: "INC", color: "#00BFFF", votes: 0 },
+    { name: "Bharatiya Janata Party",      code: "BJP", color: "#FF6B2B", votes: 0 },
+    { name: "Communist Party of India (M)",code: "CPM", color: "#CC0000", votes: 0 },
+    { name: "Bahujan Samaj Party",         code: "BSP", color: "#1A2A5E", votes: 0 },
+    { name: "National People's Party",     code: "NPP", color: "#6B21A8", votes: 0 },
+  ],
+  currentUser: null,
+};
+
+function generateEpic() {
+  let epic;
+  do { epic = Math.floor(100000 + Math.random() * 900000); }
+  while (DB.voters.some(v => v.epic === epic));
+  return epic;
+}
+
+// ─────────────────────────────────────────────────────
+//  Auth
+// ─────────────────────────────────────────────────────
+const PWD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+function showAlert(id, msg, type) {
+  const el = document.getElementById(id);
+  el.className = `alert ${type}`;
+  el.textContent = msg;
+}
+
+function doRegister() {
+  const fn = document.getElementById('reg-fn').value.trim();
+  const ln = document.getElementById('reg-ln').value.trim();
+  const mob = document.getElementById('reg-mobile').value.trim();
+  const pwd = document.getElementById('reg-pwd').value;
+  const cpwd = document.getElementById('reg-cpwd').value;
+
+  if (!fn || !ln || !mob || !pwd) return showAlert('reg-alert','All fields are required.','error');
+  if (!/^\d{10}$/.test(mob))   return showAlert('reg-alert','Mobile must be exactly 10 digits.','error');
+  if (!PWD_REGEX.test(pwd))    return showAlert('reg-alert','Password needs 8+ chars, 1 uppercase, 1 digit, 1 special char.','error');
+  if (pwd !== cpwd)            return showAlert('reg-alert','Passwords do not match.','error');
+  if (DB.users.some(u => u.mobile === mob)) return showAlert('reg-alert','Mobile already registered.','error');
+
+  DB.users.push({ mobile: mob, password: pwd, firstName: fn, lastName: ln });
+  showAlert('reg-alert','Account created! Signing you in…','success');
+  setTimeout(() => {
+    DB.currentUser = { mobile: mob, name: fn + ' ' + ln };
+    enterApp();
+  }, 800);
+}
+
+function doLogin() {
+  const mob = document.getElementById('login-mobile').value.trim();
+  const pwd = document.getElementById('login-pwd').value;
+  const user = DB.users.find(u => u.mobile === mob && u.password === pwd);
+  if (!user) return showAlert('login-alert','Invalid mobile or password.','error');
+  DB.currentUser = { mobile: mob, name: user.firstName + ' ' + user.lastName };
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('user-greeting').textContent = `Welcome, ${DB.currentUser.name}`;
+  updateStats();
+}
+
+function logout() {
+  DB.currentUser = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'block';
+  showLogin();
+}
+
+function showRegister() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('register-form').style.display = 'block';
+}
+
+function showLogin() {
+  document.getElementById('register-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+// ─────────────────────────────────────────────────────
+//  Navigation
+// ─────────────────────────────────────────────────────
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+
+  if (id === 'results')    renderResults();
+  if (id === 'all-voters') renderAllVoters();
+  if (id === 'vote')       renderPartyList();
+  updateStats();
+}
+
+// ─────────────────────────────────────────────────────
+//  Voter Registration multi-step
+// ─────────────────────────────────────────────────────
+let currentStep = 0;
+
+function switchStep(n, btn) {
+  document.querySelectorAll('.reg-step').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.step-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('step-' + n).style.display = 'block';
+  btn.classList.add('active');
+  currentStep = n;
+}
+
+function nextStep(n) {
+  document.querySelectorAll('.reg-step').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.step-tab').forEach((b, i) => {
+    b.classList.toggle('active', i === n);
+  });
+  document.getElementById('step-' + n).style.display = 'block';
+  currentStep = n;
+}
+
+function submitVoterForm() {
+  const epic = generateEpic();
+  const voter = {
+    state:       document.getElementById('f-state').value,
+    district:    document.getElementById('f-district').value,
+    assembly:    document.getElementById('f-assembly').value,
+    dob:         document.getElementById('f-dob').value,
+    docProof:    document.getElementById('f-doc').value,
+    firstName:   document.getElementById('f-fn').value,
+    lastName:    document.getElementById('f-ln').value,
+    gender:      document.getElementById('f-gender').value,
+    mobileNumber:document.getElementById('f-mobile').value,
+    email:       document.getElementById('f-email').value,
+    aadhaarNumber:document.getElementById('f-aadhaar').value,
+    apartmentNo: document.getElementById('f-apt').value,
+    area:        document.getElementById('f-area').value,
+    town:        document.getElementById('f-town').value,
+    pincode:     document.getElementById('f-pincode').value,
+    taluka:      document.getElementById('f-taluka').value,
+    addressProof:document.getElementById('f-addrproof').value,
+    relation:    document.getElementById('f-relation').value,
+    relativeName:document.getElementById('f-relname').value,
+    relativeId:  document.getElementById('f-relid').value,
+    epic,
+    hasVoted: false,
+  };
+
+  if (!voter.firstName || !voter.lastName || !voter.state) {
+    return showAlert('reg-alert-main','Please fill all required fields.','error');
+  }
+
+  DB.voters.push(voter);
+  showAlert('reg-alert-main',`✔ Application submitted. Your EPIC Number is: ${epic}`, 'success');
+  updateStats();
+}
+
+// ─────────────────────────────────────────────────────
+//  Search & Manage
+// ─────────────────────────────────────────────────────
+function searchVoter() {
+  const epic = parseInt(document.getElementById('search-epic').value);
+  const voter = DB.voters.find(v => v.epic === epic);
+  const el = document.getElementById('search-result');
+  if (!voter) {
+    el.innerHTML = '<p style="color:var(--muted); font-size:13px;">No record found for EPIC ' + epic + '.</p>';
+    el.classList.add('show');
+    return;
+  }
+  el.innerHTML = `
+    <div class="field-row"><span class="key">Name</span><span class="val">${voter.firstName} ${voter.lastName}</span></div>
+    <div class="field-row"><span class="key">EPIC</span><span class="val">${voter.epic}</span></div>
+    <div class="field-row"><span class="key">State</span><span class="val">${voter.state}</span></div>
+    <div class="field-row"><span class="key">District</span><span class="val">${voter.district}</span></div>
+    <div class="field-row"><span class="key">Gender</span><span class="val">${voter.gender}</span></div>
+    <div class="field-row"><span class="key">DOB</span><span class="val">${voter.dob}</span></div>
+    <div class="field-row"><span class="key">Email</span><span class="val">${voter.email}</span></div>
+    <div class="field-row"><span class="key">Voted</span><span class="val">${voter.hasVoted ? '✔ Yes' : 'No'}</span></div>
+  `;
+  el.classList.add('show');
+}
+
+function deleteVoter() {
+  const epic = parseInt(document.getElementById('del-epic').value);
+  const idx = DB.voters.findIndex(v => v.epic === epic);
+  if (idx === -1) return showAlert('del-alert','No record found for EPIC ' + epic + '.','error');
+  DB.voters.splice(idx, 1);
+  showAlert('del-alert','Voter record deleted successfully.','success');
+  updateStats();
+}
+
+// ─────────────────────────────────────────────────────
+//  All Voters
+// ─────────────────────────────────────────────────────
+function renderAllVoters() {
+  const el = document.getElementById('all-voters-list');
+  if (DB.voters.length === 0) {
+    el.innerHTML = '<p style="color:var(--muted); font-size:13px;">No voter records registered yet.</p>';
+    return;
+  }
+  el.innerHTML = DB.voters.map(v => `
+    <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--border);">
+      <div style="width:38px; height:38px; border-radius:50%; background:var(--navy-light); color:var(--navy);
+                  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0;">
+        ${v.firstName[0]}${v.lastName[0]}
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:500;">${v.firstName} ${v.lastName}</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:2px;">${v.state} · ${v.district} · EPIC: ${v.epic}</div>
+      </div>
+      <span style="font-size:11px; padding:3px 10px; border-radius:20px; ${v.hasVoted ? 'background:var(--green-light); color:var(--green);' : 'background:var(--saffron-light); color:var(--saffron);'}">
+        ${v.hasVoted ? 'Voted' : 'Not voted'}
+      </span>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────────────────
+//  Vote
+// ─────────────────────────────────────────────────────
+let verifiedEpic = null;
+let selectedParty = null;
+
+function verifyEpic() {
+  const epic = parseInt(document.getElementById('vote-epic').value);
+  const voter = DB.voters.find(v => v.epic === epic);
+  const info = document.getElementById('voter-info');
+  if (!voter) { info.innerHTML = '<span style="color:#B91C1C;">✘ No voter found with EPIC ' + epic + '.</span>'; return; }
+  if (voter.hasVoted) { info.innerHTML = '<span style="color:#B91C1C;">✘ This voter has already cast their vote.</span>'; return; }
+  info.innerHTML = `<span style="color:var(--green);">✔ Verified: ${voter.firstName} ${voter.lastName}, ${voter.state}</span>`;
+  verifiedEpic = epic;
+  document.getElementById('vote-card').style.display = 'block';
+}
+
+function renderPartyList() {
+  const list = document.getElementById('party-list');
+  list.innerHTML = DB.parties.map((p, i) => `
+    <div class="party-row" id="party-row-${i}" onclick="selectParty(${i})">
+      <div class="party-badge" style="background:${p.color}22; color:${p.color};">${p.code}</div>
+      <div class="party-info">
+        <div class="party-name">${p.name}</div>
+        <div class="party-code">${p.code}</div>
+      </div>
+    </div>
+  `).join('');
+  selectedParty = null;
+}
+
+function selectParty(i) {
+  document.querySelectorAll('.party-row').forEach(r => r.classList.remove('selected'));
+  document.getElementById('party-row-' + i).classList.add('selected');
+  selectedParty = i;
+}
+
+function castVote() {
+  if (selectedParty === null) return showAlert('vote-alert','Please select a party.','error');
+  if (!verifiedEpic) return showAlert('vote-alert','Please verify your EPIC first.','error');
+  const voter = DB.voters.find(v => v.epic === verifiedEpic);
+  voter.hasVoted = true;
+  DB.parties[selectedParty].votes++;
+  showAlert('vote-alert','✔ Your vote has been recorded successfully. Thank you for voting!','success');
+  document.getElementById('vote-card').style.display = 'none';
+  verifiedEpic = null; selectedParty = null;
+  updateStats();
+}
+
+// ─────────────────────────────────────────────────────
+//  Results
+// ─────────────────────────────────────────────────────
+function renderResults() {
+  const total = DB.parties.reduce((s, p) => s + p.votes, 0);
+  const sorted = [...DB.parties].sort((a, b) => b.votes - a.votes);
+  const winner = sorted[0];
+  const el = document.getElementById('results-container');
+
+  el.innerHTML = (total > 0 ? `
+    <div class="winner-banner">
+      <div class="winner-crown">🏆</div>
+      <div class="winner-text">
+        <h3>${winner.name}</h3>
+        <p>${winner.votes} vote(s) · ${((winner.votes/total)*100).toFixed(1)}% of total votes</p>
+      </div>
+    </div>
+  ` : '') + `
+    <div class="card">
+      <div class="card-title">Party-wise Results</div>
+      ${total === 0 ? '<p style="font-size:13px;color:var(--muted);">No votes have been cast yet.</p>' :
+        sorted.map((p, i) => `
+          <div class="result-row">
+            <div class="result-rank">${i+1}</div>
+            <div class="result-name">${p.name} <span style="font-size:11px; color:var(--muted);">(${p.code})</span></div>
+            <div class="result-bar-wrap">
+              <div class="result-bar" style="width:${total ? (p.votes/total*100) : 0}%; background:${p.color};"></div>
+            </div>
+            <div class="result-count">${p.votes} vote${p.votes !== 1 ? 's' : ''}</div>
+          </div>
+        `).join('')
+      }
+      <p style="font-size:12px; color:var(--muted); margin-top:1rem;">Total votes cast: ${total}</p>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────
+//  Stats
+// ─────────────────────────────────────────────────────
+function updateStats() {
+  const total = DB.voters.length;
+  const voted = DB.voters.filter(v => v.hasVoted).length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-votes').textContent = voted;
+  document.getElementById('stat-turnout').textContent = total ? Math.round(voted/total*100) + '%' : '0%';
+}
+</script>
+</body>
+</html>
